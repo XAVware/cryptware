@@ -69,3 +69,8 @@ node_modules/
 .dataconnect
 
 K.py
+downloads/
+twitter_responses/
+.venv
+__pycache__
+bitquery.py

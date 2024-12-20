@@ -11,7 +11,6 @@ import K # Make sure you add your keys to a K.py file.
 
 
 def get_tweet_comments(tweet_id):
-    # Twitter API endpoint for fetching recent tweets
     url = "https://api.twitter.com/2/tweets/search/recent"
     headers = {
         "Authorization": f"Bearer {K.BEARER_TOKEN}"

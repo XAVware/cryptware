@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter API Interaction</title>
+    <script>
+        async function fetchTweetData() {
+            const tweetId = document.getElementById("tweetId").value;
+            const response = await fetch(`/twitter/process/${tweetId}`);
+            const result = await response.json();
+
+            const resultDiv = document.getElementById("result");
+            if (response.ok) {
+                resultDiv.innerHTML = `
+                    <h3>Processed Data</h3>
+                    <pre>${JSON.stringify(result, null, 2)}</pre>
+                    <button onclick="window.location.href='/twitter/download/${tweetId}'">Download Excel</button>
+                `;
+            } else {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${result.message}</p>`;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Twitter API Interaction</h1>
+    <label for="tweetId">Enter Tweet ID:</label>
+    <input type="text" id="tweetId" placeholder="Enter Tweet ID here">
+    <button onclick="fetchTweetData()">Fetch Data</button>
+    <div id="result"></div>
+</body>
+</html>

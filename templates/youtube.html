@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Search</title>
+    <style>
+        #container {
+            display: inline-block;
+        }
+        #results {
+            width: 50%;
+        }
+        #video-player {
+            width: 50%;
+            padding: 20px;
+            text-align: center;
+        }
+        video {
+            max-width: 100%;
+        }
+    </style>
+    <script>
+        async function searchYouTube() {
+            const query = document.getElementById("searchQuery").value;
+            const response = await fetch(`/youtube/search?query=${encodeURIComponent(query)}`);
+            const resultDiv = document.getElementById("results");
+            resultDiv.innerHTML = "";
+
+            if (response.ok) {
+                const data = await response.json();
+                data.items.forEach(item => {
+                    const videoId = item.id.videoId;
+                    const title = item.snippet.title;
+                    const description = item.snippet.description;
+                    const thumbnail = item.snippet.thumbnails.medium.url;
+
+                    const videoDiv = document.createElement("div");
+                    videoDiv.innerHTML = `
+                        <div style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px;">
+                            <img src="${thumbnail}" alt="${title}" style="width: 100%; max-width: 320px;">
+                            <h3>${title}</h3>
+                            <p>${description}</p>
+                            <a href="http://127.0.0.1:5000/youtube/download/${videoId}" target="_blank">Watch Now</a>
+                        </div>
+                    `;
+                    resultDiv.appendChild(videoDiv);
+                });
+            } else {
+                resultDiv.innerHTML = `<p style="color: red;">Error fetching results</p>`;
+            }
+        }
+
+        async function downloadAndPlay(videoId) {
+            try {
+                const response = await fetch(`/youtube/download/${videoId}`);
+                if (response.ok) {
+                    const data = await response.json(); // Get the JSON response
+                    const videoPlayerDiv = document.getElementById("video-player");
+
+                    videoPlayerDiv.innerHTML = `
+                        <h3>Now Playing</h3>
+                        <video controls>
+                            <source src="${data.filepath}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    `;
+                } else {
+                    alert("Error downloading video");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred while trying to download the video.");
+            }
+        }
+
+    </script>
+</head>
+<body>
+
+    <h1>YouTube Search</h1>
+    <label for="searchQuery">Enter search terms:</label>
+    <input type="text" id="searchQuery" placeholder="Search YouTube...">
+    <button onclick="searchYouTube()">Search</button>
+    
+    <div class="float" id="container">
+        <div id="results"></div>
+        <div id="video-player">
+            <h3>No video selected</h3>
+        </div>
+    </div>
+
+</body>
+</html>
